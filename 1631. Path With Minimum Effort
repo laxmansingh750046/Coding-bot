@@ -1,0 +1,45 @@
+#include <vector>
+#include <queue>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        int row = heights.size(), col = heights[0].size();
+        vector<vector<int>> path(row, vector<int>(col, INT_MAX));
+        int dr1[] = {-1, 0, 0, 1};
+        int dr2[] = {0, -1, 1, 0};
+
+        // Define a min-priority queue of pairs (effort, coordinates)
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pq;
+
+        path[0][0] = 0;
+        pq.push({0, {0, 0}});
+
+        while (!pq.empty()) {
+            auto front = pq.top();
+            pq.pop();
+
+            int dis = front.first;
+            int curr_x = front.second.first;
+            int curr_y = front.second.second;
+            int curr_height = heights[curr_x][curr_y];
+
+            for (int i = 0; i < 4; i++) {
+                int x = curr_x + dr1[i];
+                int y = curr_y + dr2[i];
+
+                if (x >= 0 && x < row && y >= 0 && y < col) {
+                    int newdis = max(dis, abs(curr_height - heights[x][y]));
+                    if (newdis < path[x][y]) {
+                        path[x][y] = newdis;
+                        pq.push({newdis, {x, y}});
+                    }
+                }
+            }
+        }
+        return path[row - 1][col - 1];
+    }
+};
